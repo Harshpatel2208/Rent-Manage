@@ -14,7 +14,6 @@ services:
     plan: free
     rootDir: backend
     buildCommand: npm install
-    preDeployCommand: npm run migrate
     startCommand: npm start
     envVars:
       - key: NODE_ENV

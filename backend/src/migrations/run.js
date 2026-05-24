@@ -55,11 +55,15 @@ async function runMigrations() {
   } catch (err) {
     await client.query('ROLLBACK').catch(() => {});
     console.error('[Migration] Error:', err.message);
-    process.exit(1);
+    throw err;
   } finally {
     client.release();
     await pool.end();
   }
 }
 
-runMigrations();
+if (require.main === module) {
+  runMigrations().catch(() => process.exit(1));
+}
+
+module.exports = runMigrations;

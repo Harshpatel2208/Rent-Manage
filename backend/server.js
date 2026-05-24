@@ -78,25 +78,36 @@ app.use(errorHandler);
 const PORT = config.PORT || 5000;
 
 if (require.main === module) {
-  const server = app.listen(PORT, () => {
-    console.log(`[Server] Running on port ${PORT} in ${config.NODE_ENV} mode`);
+  const runMigrations = require('./src/migrations/run');
+  
+  console.log('[Server] Running database migrations...');
+  runMigrations()
+    .then(() => {
+      console.log('[Server] Database migrations completed successfully.');
+      const server = app.listen(PORT, () => {
+        console.log(`[Server] Running on port ${PORT} in ${config.NODE_ENV} mode`);
 
-    // Start cron jobs
-    if (config.NODE_ENV !== 'test') {
-      startCron();
-      startNotificationCron();
-      console.log('[Cron] Interest schedule and notification cron jobs started');
-    }
-  });
+        // Start cron jobs
+        if (config.NODE_ENV !== 'test') {
+          startCron();
+          startNotificationCron();
+          console.log('[Cron] Interest schedule and notification cron jobs started');
+        }
+      });
 
-  // Graceful shutdown
-  process.on('SIGTERM', () => {
-    console.log('[Server] SIGTERM received, shutting down gracefully');
-    server.close(() => {
-      console.log('[Server] Process terminated');
-      process.exit(0);
+      // Graceful shutdown
+      process.on('SIGTERM', () => {
+        console.log('[Server] SIGTERM received, shutting down gracefully');
+        server.close(() => {
+          console.log('[Server] Process terminated');
+          process.exit(0);
+        });
+      });
+    })
+    .catch((err) => {
+      console.error('[Server] Failed to run database migrations, exiting:', err.message);
+      process.exit(1);
     });
-  });
 
   process.on('unhandledRejection', (reason, promise) => {
     console.error('[Server] Unhandled Rejection at:', promise, 'reason:', reason);
