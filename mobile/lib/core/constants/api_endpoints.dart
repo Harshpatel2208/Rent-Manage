@@ -9,7 +9,7 @@ class ApiEndpoints {
 
   /// Base URL for all API calls. Override with --dart-define=BASE_URL=...
   /// 10.0.2.2 is the Android emulator's alias for the host machine's localhost.
-  static const String baseUrl = 'https://rent-manager-api.onrender.com';
+  static const String baseUrl = 'https://rent-manager-api-5on4.onrender.com';
 
   // ---------------------------------------------------------------------------
   // Auth
